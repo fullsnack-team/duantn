@@ -13,7 +13,6 @@ class NameTenantFinder extends TenantFinder
 
     public function findForRequest(Request $request): ?Tenant
     {
-
         $domain_name = $request->domain_name;
 
         return $this->getTenantModel()::whereName($domain_name)->first();

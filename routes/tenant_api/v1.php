@@ -16,6 +16,7 @@ use App\Http\Controllers\Tenant\CategoryController;
 */
 
 Route::post('/', function (Request $request) {
+    dd(1);
 });
 
 Route::prefix('categories')->name('categories')->group(function (){
