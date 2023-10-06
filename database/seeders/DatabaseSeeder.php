@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Tenant;
+use App\Models\User;
+use Google\Service\CloudBuild\Hash;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
