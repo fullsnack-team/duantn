@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PublicApi\AddressController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,4 +18,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function (Request $request) {
     return 1;
 });
-
+Route::get('/areas/provinces', [AddressController::class, 'provinces']);
+Route::get('/areas/districts/{province_id}', [AddressController::class, 'districts']);
+Route::get('/areas/communes/{district_id}', [AddressController::class, 'communes']);
