@@ -1,53 +1,16 @@
 "use strict";
-const KTPricingAddPricing = function () {
-    const modalForm = document.getElementById("kt_modal_add_pricing"),
-        form = modalForm.querySelector("#kt_modal_add_pricing_form"),
+const KTbusiness_fieldAddbusiness_field = function () {
+    const modalForm = document.getElementById("kt_modal_add_business_field"),
+        form = modalForm.querySelector("#kt_modal_add_business_field_form"),
         modal = new bootstrap.Modal(modalForm);
-    const isNaturalNumber = (value) => {
-        const number = Number(value);
-        return Number.isInteger(number) && number >= 0;
-    };
     return {
         init: function () {
             (() => {
                 var checkForm = FormValidation.formValidation(form, {
                     fields: {
-                        name: {
-                            validators: {
-                                notEmpty: {message: "Tên không được để trống"},
-                                stringLength: {min: 3, message: "Tên phải có ít nhất 3 ký tự"},
-                            }
-                        },
-                        max_locations: {
-                            validators: {
-                                notEmpty: {message: "Số chi nhánh tối đa không được để trống"},
-                                integer: {message: "Số chi nhánh tối đa phải là một số nguyên"},
-                                greaterThan: {
-                                    value: 0,
-                                        inclusive: false,
-                                        message: "Số chi nhánh tối đa phải lớn hơn 0",
-                                        min: 0
-                                }
-                            }
-                        },
-                        max_users: {validators: {notEmpty: {message: "Số người dùng tối đa không được để trống"},
-                                integer: {message: "Số người dùng tối đa phải là một số nguyên"},
-                                greaterThan: {
-                                    value: 0,
-                                    inclusive: false,
-                                    message: "Số người dùng tối đa phải lớn hơn 0",
-                                    min: 0
-                                }
-                            }},
-                        price_per_month: {validators: {notEmpty: {message: "Giá không được để trống"},
-                                integer: {message: "Giá phải là một số nguyên"},
-                                greaterThan: {
-                                    value: 0,
-                                    inclusive: false,
-                                    message: "Giá phải lớn hơn 0",
-                                    min: 0
-                                }
-                            }},
+                        name: {validators: {notEmpty: {message: "Tên không được để trống"}}},
+                        code: {validators: {notEmpty: {message: "Mã ngành hàng không được để trống"}}},
+                        detail: {validators: {notEmpty: {message: "Mô tả không được để trống"}}},
                     },
                     plugins: {
                         trigger: new FormValidation.plugins.Trigger,
@@ -58,22 +21,21 @@ const KTPricingAddPricing = function () {
                         })
                     }
                 });
-                const btn_submit = modalForm.querySelector('[data-kt-pricing-modal-action="submit"]');
+                const btn_submit = modalForm.querySelector('[data-kt-business_field-modal-action="submit"]');
                 btn_submit.addEventListener("click", (modalForm => {
-                    let pricing_id = form.querySelector('[name="id"]') ? form.querySelector('[name="id"]').value : "";
+                        let business_field_id = form.querySelector('[name="id"]')?form.querySelector('[name="id"]').value:"";
                     modalForm.preventDefault(), checkForm && checkForm.validate().then((function (modalForm) {
                         if ("Valid" == modalForm) {
                             (btn_submit.setAttribute("data-kt-indicator", "on"), btn_submit.disabled = !0,
                                 $.ajax({
-                                    url: pricing_id != "" ? '/admin/pricing/update' : '/admin/pricing/store',
-                                    method: pricing_id != "" ? 'PUT' : 'POST',
+                                    url: business_field_id!=""?'/admin/business-field/update':'/admin/business-field/store',
+                                    method: business_field_id!=""?'PUT':'POST',
                                     data: {
                                         _token: form.querySelector('[name="_token"]').value,
                                         name: form.querySelector('[name="name"]').value,
-                                        max_locations: form.querySelector('[name="max_locations"]').value,
-                                        max_users: form.querySelector('[name="max_users"]').value,
-                                        price_per_month: form.querySelector('[name="price_per_month"]').value,
-                                        id: pricing_id != "" ? pricing_id : null
+                                        code: form.querySelector('[name="code"]').value.toUpperCase(),
+                                        detail: form.querySelector('[name="detail"]').value,
+                                        id: business_field_id!=""?business_field_id:null
                                     },
                                     success: function (data) {
                                         btn_submit.removeAttribute("data-kt-indicator"), btn_submit.disabled = !1,
@@ -109,7 +71,7 @@ const KTPricingAddPricing = function () {
                         }
                     }))
                 }))
-                modalForm.querySelector('[data-kt-pricing-modal-action="cancel"]').addEventListener("click", (modalForm => {
+                modalForm.querySelector('[data-kt-business_field-modal-action="cancel"]').addEventListener("click", (modalForm => {
                     modalForm.preventDefault(), Swal.fire({
                         text: "Bạn có chắc chắn muốn huỷ?",
                         icon: "warning",
@@ -127,7 +89,7 @@ const KTPricingAddPricing = function () {
                             customClass: {confirmButton: "btn btn-primary"}
                         })
                     }))
-                })), modalForm.querySelector('[data-kt-pricing-modal-action="close"]').addEventListener("click", (modalForm => {
+                })), modalForm.querySelector('[data-kt-business_field-modal-action="close"]').addEventListener("click", (modalForm => {
                     modalForm.preventDefault(), Swal.fire({
                         text: "Bạn có chắc chắn muốn huỷ?",
                         icon: "warning",
@@ -151,5 +113,5 @@ const KTPricingAddPricing = function () {
     }
 }();
 KTUtil.onDOMContentLoaded((function () {
-    KTPricingAddPricing.init()
+    KTbusiness_fieldAddbusiness_field.init()
 }));

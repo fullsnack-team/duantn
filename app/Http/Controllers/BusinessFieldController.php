@@ -1,28 +1,36 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\BusinessFieldRequest;
+use App\Models\BusinessField;
 
-use Illuminate\Http\Request;
-use App\Models\Pricing;
-use App\Http\Requests\PricingRequest;
-class PricingController extends Controller
+class BusinessFieldController extends Controller
 {
+
     public function __construct(
-        private Pricing $model,
-        private PricingRequest $request,
-        private string $module_name = "Pricing",
+        private BusinessField $model,
+        private BusinessFieldRequest $request,
+        private string $module_name = "Business Field",
     )
     {
     }
     public function index()
     {
-        $pricings = Pricing::all();
-        return view('admin.pricing.index', compact('pricings'));
+        $businessFields = $this->model::orderBy('created_at','desc')->get();
+        return view('admin.business-field.index', compact('businessFields'));
+    }
+    public function list(){
+        try {
+            return responseApi($this->model::all(), true);
+        }catch (\Throwable $throwable)
+        {
+            return responseApi($throwable->getMessage(), false);
+        }
     }
     public function store(){
         try {
             if (!empty($this->request->validated())) {
-                $this->model::create($this->request->except('_token', 'id'));
+                $this->model::create($this->request->all());
                 return responseApi("Tạo thành công!", true);
             }
             return responseApi("Tạo thất bại!", false);
@@ -49,7 +57,7 @@ class PricingController extends Controller
             if (!$this->model::find($this->request->id)) return responseApi($this->module_name." không tồn tại!", false);
             if (!empty($this->request->validated())) {
                 $category = $this->model::find($this->request->id);
-                $category->update($this->request->except('_token'));
+                $category->update($this->request->all());
                 return responseApi("Cập nhật thành công!", true);
             }
             return responseApi("Cập nhật thất bại!", false);
