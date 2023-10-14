@@ -6,7 +6,7 @@ use App\Traits\TFailedValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
-class GroupCustomerRequest extends FormRequest
+class ItemUnitRequest extends FormRequest
 {
     use TFailedValidation;
     /**
@@ -14,37 +14,26 @@ class GroupCustomerRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
-    {
-        return true;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
     public function rules()
     {
         $getUrl = Str::afterLast($this->url(), '/');
 
-        $rules = [
+        $rules =  [
             "id" => [
                 "required",
-                "exists:App\Models\Tenant\GroupCustomer,id"
+                "exists:App\Models\Tenant\ItemUnit,id"
             ],
             "name" => [
                 "required",
-                "unique" => "unique:App\Models\Tenant\GroupCustomer,name"
-            ],
-            "description" => "max:500"
+                "max:255",
+                "unique" => "unique:App\Models\Tenant\ItemUnit,name"
+            ]
         ];
 
         switch ($getUrl){
             case "store":
                 return [
-                    "name" => $rules["name"],
-                    "description" => $rules["description"]
+                    "name" => $rules["name"]
                 ];
             case "update":
                 return [
@@ -53,11 +42,10 @@ class GroupCustomerRequest extends FormRequest
                         $rules["name"],
                         $rules["name"]["unique"].",".$this->id
                     ],
-                    "description" => $rules["description"]
                 ];
             case "show":
             case "delete":
-                return ["id" => $rules['id']];
+                return ["id" => $rules["id"]];
             default:
                 return [];
         }
