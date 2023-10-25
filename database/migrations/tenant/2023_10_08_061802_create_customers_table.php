@@ -15,18 +15,18 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('group_customer_id');
-            $table->tinyInteger('type');
+            $table->unsignedBigInteger('group_customer_id')->nullable();
+            $table->tinyInteger('type')->nullable();
             $table->string('name')->unique();
-            $table->tinyInteger('gender');
-            $table->date('dob');
-            $table->string('email')->unique();
+            $table->tinyInteger('gender')->nullable();
+            $table->date('dob')->nullable();
+            $table->string('email')->unique()->nullable();
             $table->string('tel')->unique();
-            $table->tinyInteger('status');
-            $table->unsignedBigInteger('province_code');
-            $table->unsignedBigInteger('district_code');
-            $table->unsignedBigInteger('ward_code');
-            $table->text('address_detail');
+            $table->tinyInteger('status')->nullable();
+            $table->unsignedBigInteger('province_code')->nullable();
+            $table->unsignedBigInteger('district_code')->nullable();
+            $table->unsignedBigInteger('ward_code')->nullable();
+            $table->text('address_detail')->nullable();
             $table->text('note')->nullable();
             $table->timestamps();
         });

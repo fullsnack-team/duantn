@@ -26,37 +26,50 @@ class CategoryRequest extends FormRequest
      */
     public function rules()
     {
-        $url = Str::afterLast($this->url(), '/');
+        $getUrl = Str::afterLast($this->url(), '/');
+        $id = ",".$this->id;
+        $rules =  [
+            "id" => [
+                "required",
+                "exists:App\Models\Tenant\Category,id"
+            ],
+            "name" => [
+                "required",
+                "max:255",
+                "unique" => "unique:App\Models\Tenant\Category,name"
+            ]
+        ];
 
-        if($url == "store"){
-            return [
-                "name" => [
-                    "required",
-                    "max:255",
-                    "unique:App\Models\Tenant\Category,name"
-                ],
-            ];
+        switch ($getUrl){
+            case "store":
+            case "update":
+                $updateId = $getUrl == "update" ? $rules["id"] : [];
+
+                $updateName = $getUrl == "update" ? [
+                    $rules["name"],
+                    $rules["name"]["unique"].$id
+                ] :
+                    $rules["name"];
+
+                return [
+                    "id" => $updateId,
+                    "name" => $updateName,
+                ];
+            case "show":
+            case "delete":
+                return ["id" => $rules["id"]];
+            default:
+                return [];
         }
-
-        if($url == "update"){
-            return [
-                "name" => [
-                    "required",
-                    "max:255",
-                    "unique:App\Models\Tenant\Category,name,".$this->id
-                ],
-            ];
-        }
-
-        return [];
     }
 
      public function messages()
      {
          return [
-             "name.required" => "Không được để trống!",
-             "name.unique" => "Tên đã tồn tại!",
-             "name.max" => "Bạn đã vượt quá ký tự cho phép!",
+             "required" => "Không được để trống!",
+             "exists" => "Dữ liệu không tồn tại!",
+             "unique" => "Dữ liệu đã tồn tại!",
+             "max" => "Bạn đã vượt quá ký tự cho phép!"
          ];
      }
 }

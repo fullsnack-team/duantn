@@ -26,60 +26,63 @@ class WarrantyRequest extends FormRequest
      */
     public function rules()
     {
-        $url = Str::afterLast($this->url(), '/');
+        $getUrl = Str::afterLast($this->url(), '/');
+        $id = ",".$this->id;
+        $rules = [
+            "id" => [
+                "required",
+                "exists:App\Models\Tenant\Warranty,id"
+            ],
+            "name" => [
+                "required",
+                "max:255",
+                "unique" => "unique:App\Models\Tenant\Warranty,name"
+            ],
+            "unit" => [
+                "required",
+                "in:0,1,2"
+            ],
+            "period" => [
+                "required",
+                "gt:0",
+                "max:500"
+            ]
+        ];
 
-        if($url == "store"){
-            return [
-                "name" => [
-                    "required",
-                    "max:255",
-                    "unique:App\Models\Tenant\Warranty,name"
-                ],
-                "unit" => [
-                    "required",
-                    "in:0,1,2"
-                ],
-                "period" => [
-                    "required",
-                    "gt:0",
-                    "max:500"
-                ]
-            ];
+        switch ($getUrl){
+            case "store":
+            case "update":
+                $updateId = $getUrl == "update" ? $rules["id"] : [];
+
+                $updateName = $getUrl == "update" ? [
+                    $rules["name"],
+                    $rules["name"]["unique"].$id
+                ] :
+                    $rules["name"];
+
+                return [
+                    "id" => $updateId,
+                    "name" => $updateName,
+                    "unit" => $rules["unit"],
+                    "period" => $rules["period"]
+                ];
+            case "show":
+            case "delete":
+                return ["id" => $rules["id"]];
+            default:
+                return [];
         }
-
-        if($url == "update"){
-            return [
-                "name" => [
-                    "required",
-                    "max:255",
-                    "unique:App\Models\Tenant\Warranty,name,".$this->id
-                ],
-                "unit" => [
-                    "required",
-                    "in:0,1,2"
-                ],
-                "period" => [
-                    "required",
-                    "gt:0",
-                    "max:500"
-                ]
-            ];
-        }
-
-        return [];
     }
 
     public function messages()
     {
         return [
-            "name.required" => "Không được để trống!",
-            "name.unique" => "Tên đã tồn tại!",
-            "name.max" => "Bạn đã vượt quá ký tự cho phép!",
-            "unit.required" => "Không được để trống!",
-            "unit.in" => "Giá trị không hợp lệ!",
-            "period.required" => "Không được để trống!",
-            "period.gt" => "Phải lớn hơn 0!",
-            "period.max" => "Bạn đã vượt quá số lượng cho phép!"
+            "required" => "Không được để trống!",
+            "exists" => "Dữ liệu không tồn tại!",
+            "unique" => "Dữ liệu đã tồn tại!",
+            "gt" => "Dữ liệu không hợp lệ!",
+            "max" => "Bạn đã vượt quá ký tự cho phép :max!",
+            "in" => "Dữ liệu không hợp lệ!"
         ];
     }
 }
