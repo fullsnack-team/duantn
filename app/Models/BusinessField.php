@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Multitenancy\Models\Concerns\UsesLandlordConnection;
 
 class BusinessField extends Model
 {
-    use HasFactory;
+    use HasFactory,UsesLandlordConnection;
 
     protected $table = 'business_fields';
     protected $fillable = [
@@ -19,4 +20,7 @@ class BusinessField extends Model
         'created_at',
         'updated_at'
     ];
+    public function tenants(){
+        return $this->hasMany(Tenant::class,'business_field_id');
+    }
 }
