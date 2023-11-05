@@ -16,7 +16,10 @@ use App\Http\Controllers\Tenant\SupplierController;
 use App\Http\Controllers\Tenant\WarrantyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Tenant\Auth\AuthController;
+use App\Http\Controllers\Tenant\ConfigController;
+use App\Http\Controllers\Tenant\DebtController;
+use App\Http\Controllers\Tenant\PaymentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -139,9 +142,17 @@ Route::prefix('config')->name('config.')->group(function () {
 Route::prefix('debt')->name('debt')->group(function () {
     Route::post('/recovery', [DebtController::class, 'listRecovery'])->name('listRecovery');
     Route::post('/repay', [DebtController::class, 'listRepay'])->name('listRepay');
+Route::prefix('debt')->name('debt.')->group(function (){
+    Route::post('/', [DebtController::class, 'index'])->name('index');
     Route::post('/store', [DebtController::class, 'store'])->name('store');
-    Route::post('/show', [DebtController::class, 'show'])->name('show');
+    Route::post('/show/{id}', [DebtController::class, 'show'])->name('show');
     Route::post('/update', [DebtController::class, 'update'])->name('update');
-//    Route::post('recovery/delete', [DebtController::class, 'deleteRecovery'])->name('deleteRecovery');
+    Route::post('/delete', [DebtController::class, 'delete'])->name('delete');
+});
+
+Route::prefix('payment')->name('payment.')->group(function () {
+    Route::post('/', [PaymentController::class, 'index'])->name('index');
+    Route::post('/store/debt/{id}', [PaymentController::class, 'storeDebt'])->name('storeDebt');
+    Route::post('/store/order/{id}', [PaymentController::class, 'storeOrder'])->name('storeDebt');
 });
 
