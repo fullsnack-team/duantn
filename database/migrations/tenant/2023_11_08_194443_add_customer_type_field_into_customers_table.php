@@ -13,11 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('group_suppliers', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->text('description')->nullable();
-            $table->timestamps();
+        Schema::table('customers', function (Blueprint $table) {
+            //
+            $table->boolean('customer_type')->default(0)->comment('0: Khách hàng, 1: Nhà cung cấp');
         });
     }
 
@@ -28,6 +26,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('group_suppliers');
+        Schema::table('customers', function (Blueprint $table) {
+            //
+            $table->dropColumn('customer_type');
+        });
     }
 };

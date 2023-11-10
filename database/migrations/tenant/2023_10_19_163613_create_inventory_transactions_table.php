@@ -16,10 +16,13 @@ return new class extends Migration
         Schema::create('inventory_transactions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('inventory_id');
+            $table->index('inventory_id');
+            $table->unsignedBigInteger('inventory_id_out')->nullable();
             $table->unsignedBigInteger('partner_id');
             $table->tinyInteger('partner_type');
             $table->tinyInteger('trans_type');
             $table->unsignedBigInteger('inventory_transaction_id');
+            $table->index('inventory_transaction_id');
             $table->string('reason');
             $table->text('note');
             $table->tinyInteger('status');
