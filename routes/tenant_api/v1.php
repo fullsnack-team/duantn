@@ -13,10 +13,12 @@ use App\Http\Controllers\Tenant\InventoryTransactionController;
 use App\Http\Controllers\Tenant\ItemUnitController;
 use App\Http\Controllers\Tenant\LocationController;
 use App\Http\Controllers\Tenant\ProductController;
+use App\Http\Controllers\Tenant\OrderController;
 use App\Http\Controllers\Tenant\SupplierController;
 use App\Http\Controllers\Tenant\WarrantyController;
 use App\Http\Controllers\Tenant\VariationController;
 use App\Http\Controllers\Tenant\VariationQuantityController;
+use App\Http\Controllers\Tenant\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,11 +37,11 @@ Route::post('/', function (Request $request) {
 });
 Route::post('get-customer', [CustomerController::class, 'getListCustomer']);
 Route::post('get-status-customer', [CustomerController::class, 'getCustomerWithStatus']);
-Route::post('get-product',[ProductController::class,'getListProduct']);
-Route::post('get-attribute',[ProductController::class,'getListAttribute']);
-Route::post('search-customer',[CustomerController::class,'searchCustomer']);
-Route::post('get-variation',[VariationController::class,'getListVariation']);
-Route::post('storage/list',[VariationQuantityController::class,'getVariationQuantity']);
+Route::post('get-product', [ProductController::class, 'getListProduct']);
+Route::post('get-attribute', [ProductController::class, 'getListAttribute']);
+Route::post('search-customer', [CustomerController::class, 'searchCustomer']);
+Route::post('get-variation', [VariationController::class, 'getListVariation']);
+Route::post('storage/list', [VariationQuantityController::class, 'getVariationQuantity']);
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->name('register');
     Route::post('login', [AuthController::class, 'login'])->name('login');
@@ -129,7 +131,7 @@ Route::prefix('storage')->name('storage.')->group(function () {
     });
     Route::post('update', [InventoryTransactionController::class, 'update'])->name('updateStatus');
     Route::post('update-quantity/{inventoryId}', [InventoryTransactionController::class, 'updateQuantity'])->name('updateQuantity');
-    Route::prefix('trans')->name('.trans.')->group(function (){
+    Route::prefix('trans')->name('.trans.')->group(function () {
         Route::post('/', [InventoryTransactionController::class, 'listTransfer'])->name('listTransfer');
         Route::post('store', [InventoryTransactionController::class, 'createTransfer'])->name('createTransfer');
     });
@@ -158,11 +160,23 @@ Route::prefix('debt')->name('debt')->group(function () {
 //    Route::post('recovery/delete', [DebtController::class, 'deleteRecovery'])->name('deleteRecovery');
 });
 
+
+Route::prefix('orders')->name('orders')->group(function (){
+    Route::post('/', [OrderController::class, 'list'])->name('list');
+    Route::post('store', [OrderController::class, 'store'])->name('store');
+    Route::post('show', [OrderController::class, 'show'])->name('show');
+});
+
 Route::prefix('printed_forms')->middleware('cors')->name('printed_forms')->group(function () {
     Route::post('/', [PrintedFormController::class, 'list'])->name('list');
     Route::post('store', [PrintedFormController::class, 'store'])->name('store');
     Route::post('show', [PrintedFormController::class, 'show'])->name('show');
     Route::post('update', [PrintedFormController::class, 'update'])->name('update');
     Route::post('delete', [PrintedFormController::class, 'delete'])->name('delete');
+});
+Route::prefix('payment')->name('payment.')->group(function () {
+    Route::post('/', [PaymentController::class, 'index'])->name('list');
+    Route::post('/debt/{id}', [PaymentController::class, 'storeDebt'])->name('storeDebt');
+    Route::post('/order/{id}', [PaymentController::class, 'storeOrder'])->name('storeOrder');
 });
 
