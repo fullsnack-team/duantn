@@ -6,10 +6,10 @@
     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
         <!--begin::Logo image-->
         <a href="{{route('admin.home')}}">
-            <img alt="Logo" src="{{ asset('assets/media/logos/default-dark.svg')}}"
-                 class="h-25px app-sidebar-logo-default"/>
-            <img alt="Logo" src="{{ asset('assets/media/logos/default-small.svg')}}"
-                 class="h-20px app-sidebar-logo-minimize"/>
+            <img alt="Logo" src="{{ asset('assets/media/logos/logo-dark.svg')}}"
+                 class="w-100 app-sidebar-logo-default"/>
+            <img alt="Logo" src="{{ asset('assets/media/logos/logo-small.svg')}}"
+                 class="w-100 app-sidebar-logo-minimize"/>
         </a>
         <div id="kt_app_sidebar_toggle"
              class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate"
@@ -169,6 +169,38 @@
 															<span class="bullet bullet-dot"></span>
 														</span>
                                     <span class="menu-title">Danh sách người dùng</span>
+                                </a>
+                                <!--end:Menu link-->
+                            </div>
+                            <!--end:Menu item-->
+                        </div>
+                        <!--end:Menu sub-->
+                    </div>
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                        <!--begin:Menu link-->
+                        <span class="menu-link">
+												<span class="menu-icon">
+													<i class="ki-duotone ki-bucket fs-2">
+														<span class="path1"></span>
+														<span class="path2"></span>
+														<span class="path3"></span>
+														<span class="path4"></span>
+													</i>
+												</span>
+												<span class="menu-title">Tenants</span>
+												<span class="menu-arrow"></span>
+											</span>
+                        <!--end:Menu link-->
+                        <!--begin:Menu sub-->
+                        <div class="menu-sub menu-sub-accordion menu-active-bg">
+                            <!--begin:Menu item-->
+                            <div class="menu-item">
+                                <!--begin:Menu link-->
+                                <a class="menu-link" href="{{ route('admin.tenant.index') }}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                                    <span class="menu-title">Danh sách Tenant</span>
                                 </a>
                                 <!--end:Menu link-->
                             </div>
