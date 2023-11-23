@@ -197,7 +197,7 @@ class OrderController extends Controller
         DB::beginTransaction();
         try {
             $order = $this->model::create([
-                "location_id" => $this->request->location_id,
+                "location_id" => $this->request->location,
                 "customer_id" => $this->request->customer_id,
                 "created_by" => $this->request->created_by,
                 "discount" => $this->request->discount,
@@ -214,7 +214,7 @@ class OrderController extends Controller
                 $orderDetail = $this->orderDetailModel::create([
                     'order_id' => $order->id,
                     'variation_id' => $order_detail['id'],
-                    'price' => $order_detail['price'],
+                    'price' => $order_detail['price_export'],
                     'discount' => $order_detail['priceModal']['result'],
                     'discount_type' => $order_detail['priceModal']['radioDiscount'],
                     'tax' => $order_detail['priceModal']['tax'],

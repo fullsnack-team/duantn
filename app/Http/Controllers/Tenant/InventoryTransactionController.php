@@ -110,7 +110,7 @@ class InventoryTransactionController extends Controller
             $data = $inventoryTransactionData->map(function ($inventoryTransactionData) {
                 return [
                     "id" => $inventoryTransactionData->id,
-                    "inventory_name" => $inventoryTransactionData->inventory->name,
+                    "inventory_name" => $inventoryTransactionData->inventory->name ?? null,
                     "partner_name" => $inventoryTransactionData->partner->name,
                     "partner_type" => $inventoryTransactionData->partner_type,
                     "trans_type" => $inventoryTransactionData->trans_type,
