@@ -152,7 +152,7 @@ class OrderController extends Controller
                             'discount' => $orderDetails->discount,
                             'discount_type' => $orderDetails->discount_type,
                             'tax' => $orderDetails->tax,
-                            'quantity' => $orderDetails->quantity,
+                            'quantity' => $this->orderDetailBatchModel::query()->quantity($orderDetails),
                             'total_price' => $orderDetails->total_price
                         ];
                     }),
@@ -233,6 +233,10 @@ class OrderController extends Controller
                             ->decrement('quantity', $order_detail['quanity']);
                     }
                 } else {
+                    $this->orderDetailBatchModel::create([
+                        'order_detail_id' => $orderDetail->id,
+                        'quantity' => $order_detail['quanity']
+                    ]);
                     $idVariationQuantities = $this->variationQuantityModel::query()
                         ->where('variation_id', $order_detail['id'])
                         ->where('quantity', '>', 0)
@@ -386,7 +390,7 @@ class OrderController extends Controller
                             'discount' => $orderDetails->discount,
                             'discount_type' => $orderDetails->discount_type,
                             'tax' => $orderDetails->tax,
-                            'quantity' => $orderDetails->quantity,
+                            'quantity' => $this->orderDetailBatchModel::query()->quantity($orderDetails),
                             'total_price' => $orderDetails->total_price
                         ];
                     }),
