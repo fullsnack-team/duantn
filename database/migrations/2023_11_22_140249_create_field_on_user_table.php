@@ -13,21 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('tenants', function (Blueprint $table) {
-            $table->bigInteger('business_field_id')->default(1);
-            $table->tinyInteger('status')->default(1);
-            $table->softDeletes();
+        Schema::table('users', function (Blueprint $table) {
+            $table->bigInteger('created_by')->default(0);
         });
     }
 
-    /**
-     * Reverse the migrations.
+    /**     * Reverse the migrations.
      *
      * @return void
      */
     public function down()
     {
-        Schema::table('tenants', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             //
         });
     }
