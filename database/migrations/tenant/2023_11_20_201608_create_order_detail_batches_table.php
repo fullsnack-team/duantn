@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('tenants', function (Blueprint $table) {
-            $table->bigInteger('business_field_id')->default(1);
-            $table->tinyInteger('status')->default(1);
-            $table->softDeletes();
+        Schema::create('order_detail_batches', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('order_detail_id');
+            $table->unsignedBigInteger('batch_id')->nullable();
+            $table->integer('quantity');
+            $table->timestamps();
         });
     }
 
@@ -27,8 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('tenants', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('order_detail_batches');
     }
 };
