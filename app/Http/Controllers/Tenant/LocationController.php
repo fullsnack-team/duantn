@@ -47,7 +47,7 @@ class LocationController extends Controller
     public function list()
     {
         try {
-            $locations = Location::with(['province', 'district', 'commune'])->get();
+            $locations = Location::with(['inventories'])->get();
             $return = $locations->map(function ($data) {
                 return [
                     'id' => $data->id,
@@ -59,7 +59,8 @@ class LocationController extends Controller
                     'address_detail' => $data->address_detail,
                     'status' => $data->status,
                     'is_main' => $data->is_main,
-                    'created_by' => $data->created_by
+                    'created_by' => $data->created_by,
+                    'inventory' => $data->inventories->first(),
                 ];
             });
             return responseApi($return, true);
@@ -99,7 +100,6 @@ class LocationController extends Controller
                 $fileName = $file->getClientOriginalName();
                 $fullpath = $file->storeAs('images', $fileName, 'public');
             }
-            $address = Commune::with(['district', 'district.province'])->whereId($request->ward_code)->first();
             $data = [
                 'name' => $request->name,
                 'image' => $fullpath ?? null,
@@ -137,7 +137,6 @@ class LocationController extends Controller
             } else {
                 $fullpath = $location->image;
             }
-            $address = Commune::with(['district', 'district.province'])->whereId($request->ward_code)->first();
             $data = [
                 'name' => $request->name,
                 'image' => $fullpath,

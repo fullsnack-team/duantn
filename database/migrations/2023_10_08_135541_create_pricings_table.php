@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('name');
             $table->integer('max_locations');
             $table->integer('max_users');
-            $table->double('price_per_month', 10, 2);
+            $table->double('price');
+            $table->integer('expiry_day');
             $table->timestamps();
         });
     }
