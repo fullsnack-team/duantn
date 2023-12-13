@@ -31,10 +31,6 @@ class StatisticRequest extends FormRequest
             "location_id" => [
                 "nullable",
                 "exists:App\Models\Tenant\Location,id"
-            ],
-            "inventory_id" => [
-                "nullable",
-                "exists:App\Models\Tenant\Inventory,id"
             ]
         ];
 
@@ -46,7 +42,6 @@ class StatisticRequest extends FormRequest
             case "products":
                 return [
                     "location_id" => $rules["location_id"],
-                    "inventory_id" => $rules["inventory_id"]
                 ];
             default:
                 return [];
@@ -56,7 +51,7 @@ class StatisticRequest extends FormRequest
     public function messages()
     {
         return [
-            "exists" => "Dữ liệu không tồn tại!"
+            "location_id.exists" => "Mã cơ sở không tồn tại!"
         ];
     }
 }

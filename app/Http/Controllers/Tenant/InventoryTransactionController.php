@@ -66,9 +66,9 @@ class InventoryTransactionController extends Controller
     public function list(Request $request)
     {
         try {
-            $inventoryTransactionData = $this->model::with('inventory', 'partner', 'createdBy')->paginate(10);
+            $inventoryTransactionData = $this->model::with('inventory', 'partner', 'createdBy')->orderBy('created_at','desc')->paginate(10);
             if ($request->has('trans_type') && $request->trans_type != '') {
-                $inventoryTransactionData=$this->model::with('inventory', 'partner', 'createdBy')->where('trans_type',$request->trans_type)->paginate(10);
+                $inventoryTransactionData=$this->model::with('inventory', 'partner', 'createdBy')->where('trans_type',$request->trans_type)->orderBy('created_at','desc')->paginate(10);
             }
             $data = $inventoryTransactionData->getCollection()->transform(function ($inventoryTransactionData) {
                 return [
@@ -233,7 +233,7 @@ class InventoryTransactionController extends Controller
                 ->where('variation_id', $request->variation_id)
                 ->first();
             $priceImport = $this->variationModel::findOrfail($request->variation_id)->price_import;
-            if ($variationQuantity->quantity < $request->quantity) {
+            if (($variationQuantity->quantity*1 + $request->quantity*1)<0) {
                 return responseApi("Số lượng tồn kho không đủ!", false);
             }
             if ($variationQuantity) {
@@ -400,11 +400,11 @@ class InventoryTransactionController extends Controller
             $count = $data->count();
             if ($count == 3) {
                 $statusOut = $this->model::where('inventory_transaction_id', $inventory_transaction_id)->where('trans_type', 1)->first()->status;
-                if ($statusOut == 2) {
-                   return false;
+                if ($statusOut == 1 || $statusOut == 0) {
+                   return true;
                 }
             }
-            return true;
+            return false;
         } catch (\Throwable $throwable) {
             return responseApi($throwable->getMessage(), false);
         }

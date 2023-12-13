@@ -22,7 +22,9 @@ class LocationController extends Controller
             'name' => 'required',
 //            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'required|integer|min:0',
-            'is_main' => 'required|integer|min:0'
+            'is_main' => 'required|integer|min:0',
+            'tel' => ['nullable', 'min:10', 'regex:/^(03|05|07|08|09)+([0-9]{8})$/'],
+            'email' => ['nullable', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
         ];
         $message = [
             'name.required' => 'Tên phải được nhập',
@@ -35,7 +37,10 @@ class LocationController extends Controller
             'status.min' => 'Trạng thái không hợp lệ',
             'is_main.required' => 'Cơ sở mặc định phải được chọn',
             'is_main.integer' => 'Cơ sở mặc định không hợp lệ',
-            'is_main.min' => 'Cơ sở mặc định không hợp lệ'
+            'is_main.min' => 'Cơ sở mặc định không hợp lệ',
+            'tel.regex' => 'Số điện thoại không hợp lệ',
+            'tel.min' => 'Số điện thoại không hợp lệ',
+            'email.regex' => 'Email không hợp lệ',
         ];
         return $request->validate($rules, $message);
     }
@@ -52,6 +57,9 @@ class LocationController extends Controller
                     'description' => $data->description,
                     'tel' => $data->tel,
                     'email' => $data->email,
+                    'province_id' => $data->province_code,
+                    'district_id' => $data->district_code,
+                    'commune_id' => $data->ward_code,
                     'address_detail' => $data->address_detail,
                     'status' => $data->status,
                     'is_main' => $data->is_main,
@@ -75,6 +83,9 @@ class LocationController extends Controller
                 'description' => $data->description,
                 'tel' => $data->tel,
                 'email' => $data->email,
+                'province_id' => $data->province_code,
+                'district_id' => $data->district_code,
+                'commune_id' => $data->ward_code,
                 'address_detail' => $data->address_detail,
                 'status' => $data->status,
                 'is_main' => $data->is_main,
@@ -91,8 +102,8 @@ class LocationController extends Controller
         DB::beginTransaction();
         try {
             $this->validation($request);
-            $countMain=Location::where('is_main', 1)->count();
-            if ($countMain>1){
+            $countMain = Location::where('is_main', 1)->count();
+            if ($countMain > 1) {
                 return responseApi('Đã có cơ sở mặc định', false);
             }
             $file = $request->file('image');
@@ -133,8 +144,8 @@ class LocationController extends Controller
             $this->validation($request);
             $location = Location::query()->find($request->id);
             if ($location->is_main == 0 && $request->is_main == 1) {
-                $countMain=Location::where('is_main', 1)->count();
-                if ($countMain>1){
+                $countMain = Location::where('is_main', 1)->count();
+                if ($countMain > 1) {
                     return responseApi('Đã có cơ sở mặc định', false);
                 }
             }
@@ -179,10 +190,18 @@ class LocationController extends Controller
     {
         try {
             $location = Location::query()->findOrFail($request->id);
-            $location?->delete();
-            Storage::delete('public/' . $location->image);
-            Inventory::query()->where('location_id', $request->id)->delete();
-            return responseApi('Xoá thành công', true);
+            if ($location) {
+                $variationQuantity = Tenant\VariationQuantity::query()->where('inventory_id', $location->id);
+                if ($variationQuantity->sum('quantity') > 0) {
+                    return responseApi('Cơ sở này đang được sử dụng và còn hàng trong kho', false);
+                } else {
+                    $location?->delete();
+                    Storage::delete('public/' . $location->image);
+                    Inventory::query()->where('location_id', $request->id)->delete();
+                    $variationQuantity->delete();
+                    return responseApi('Xoá thành công', true);
+                }
+            }
         } catch (\Throwable $throwable) {
             return responseApi($throwable->getMessage());
         }
@@ -198,6 +217,7 @@ class LocationController extends Controller
             'code' => Str::slug('Kho ' . $location->name)
         ]);
     }
+
     protected function checkCountInventory()
     {
         $pricingId = Tenant::current()->first()->pricing_id;
