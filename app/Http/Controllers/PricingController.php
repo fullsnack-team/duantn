@@ -48,6 +48,7 @@ class PricingController extends Controller
 
     public function update()
     {
+        return responseApi($this->request->all(),true);
         try {
             if (!$this->model::find($this->request->id)) return responseApi($this->module_name . " không tồn tại!", false);
             if (!empty($this->request->validated())) {

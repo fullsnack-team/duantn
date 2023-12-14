@@ -37,13 +37,13 @@ class PricingRequest extends FormRequest
         }
 
         if($url == "update"){
-            return [
-                'name' => 'required|min:3|unique:App\Models\Pricing,name,'.$this->id,
-                'max_locations' => 'required|numeric|min:0',
-                'max_users' => 'required|numeric|min:0',
-                'price' => 'required|numeric|min:-1',
-                'expiry_day' => 'required|numeric|min:0',
-            ];
+//            return [
+//                'name' => 'required|min:3|unique:App\Models\Pricing,name,'.$this->id,
+//                'max_locations' => 'required|numeric|min:0',
+//                'max_users' => 'required|numeric|min:0',
+//                'price' => 'required|numeric|min:-1',
+//                'expiry_day' => 'required|numeric|min:0',
+//            ];
         }
 
         return [];
