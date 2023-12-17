@@ -22,7 +22,7 @@ class GroupCustomerController extends Controller
             return responseApi($this->model::query()
                 ->orderBy('id','desc')
                 ->where('type',0)
-                ->paginate(10), true);
+                ->get(), true);
         }catch (\Throwable $throwable)
         {
             return responseApi($throwable->getMessage(), false);

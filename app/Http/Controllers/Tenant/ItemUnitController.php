@@ -19,7 +19,7 @@ class ItemUnitController extends Controller
 
     public function list(){
         try {
-            return responseApi($this->model::query()->paginate(10), true);
+            return responseApi($this->model::query()->get(), true);
         }catch (\Throwable $throwable)
         {
             return responseApi($throwable->getMessage(), false);

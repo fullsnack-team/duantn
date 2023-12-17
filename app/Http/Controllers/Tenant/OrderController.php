@@ -39,9 +39,13 @@ class OrderController extends Controller
                 'location',
                 'createdBy',
                 'payments'
-            ])->orderBy('id', 'desc')->paginate(10);
+            ])
+                ->when($this->request->location_id, function ($query) {
+                    return $query->where('location_id', $this->request->location_id);
+                })
+                ->orderBy('id', 'desc')->get();
 
-            $data = $orderData->getCollection()->transform(function ($orderData) {
+            $data = $orderData->map(function ($orderData) {
                 return [
                     'id' => $orderData->id,
                     'location_id' => $orderData->location_id,
@@ -177,7 +181,7 @@ class OrderController extends Controller
                 ];
             });
 
-            return responseApi(paginateCustom($data, $orderData), true);
+            return responseApi($data, true);
         } catch (\Throwable $throwable) {
             return responseApi($throwable->getMessage(), false);
         }
@@ -243,7 +247,7 @@ class OrderController extends Controller
                         ->first();
                     if($idVariationQuantities){
                         $this->variationQuantityModel::query()
-                            ->where('id', $idVariationQuantities->id)
+                            ->where('variation_id', $idVariationQuantities->id)
                             ->decrement('quantity', $order_detail['quanity']);
                     }
                 }

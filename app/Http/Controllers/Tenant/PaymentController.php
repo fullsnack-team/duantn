@@ -31,8 +31,8 @@ class PaymentController extends Controller
     public function index()
     {
         try {
-            $payment = $this->model::with('paymentable', 'createdBy')->paginate(10);
-            $data = $payment->getCollection()->transform(function ($item) {
+            $payment = $this->model::with('paymentable', 'createdBy')->orderBy('id', 'desc')->get();
+            $data = $payment->map(function ($item) {
                 return [
                     "id" => $item->id,
                     "paymentable_type" => $item->paymentable_type,

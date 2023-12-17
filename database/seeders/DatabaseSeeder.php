@@ -50,6 +50,13 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
+        Tenant\Customer::query()->create([
+            'name' => 'Khách vãng lai',
+        ]);
+        Tenant\Customer::query()->create([
+            'name' => 'Nhà cung cấp NextGo',
+            'type' => 1,
+        ]);
         $staff = \App\Models\Tenant\User::query()->create([
             'name' => 'staff1',
             'email' => 'staff1@gmail.com',

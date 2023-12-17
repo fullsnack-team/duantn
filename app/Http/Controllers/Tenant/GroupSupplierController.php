@@ -23,7 +23,7 @@ class GroupSupplierController extends Controller
                 ->query()
                 ->where('type', 1)
                 ->orderBy('id','desc')
-                ->paginate(10), true);
+                ->get(), true);
         }catch (\Throwable $throwable)
         {
             return responseApi($throwable->getMessage(), false);

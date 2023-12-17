@@ -30,11 +30,22 @@ class DebtController extends Controller
     public function index(Request $request)
     {
         try {
-            $debt = $this->model::with('partner')->paginate(10);
+            $debt = $this->model::with(['partner','location'])
+                ->when($request->has('location_id'), function ($query) use ($request) {
+                   return $query->where('location_id', $request->location_id);
+                })
+                ->orderBy('id', 'desc')
+                ->get();
             if ($request->has('type')) {
-                $debt = $this->model::with('partner')->where('type', $request->type)->paginate(10);
+                $debt = $this->model::with('partner','location')
+                    ->when($request->has('location_id'), function ($query) use ($request) {
+                        return $query->where('location_id', $request->location_id);
+                    })
+                    ->where('type', $request->type)
+                    ->orderBy('id', 'desc')
+                    ->get();
             }
-            $data = $debt->getCollection()->transform(function ($item) {
+            $data = $debt->map(function ($item) {
                 return [
                     "id" => $item->id,
                     "partner_name" => $item->partner->name,
@@ -46,9 +57,11 @@ class DebtController extends Controller
                     "amount_paid" => $item->amount_paid,
                     "note" => $item->note,
                     "status" => $item->status,
+                    "location_id" => $item->location_id,
+                    "location_name" => $item->location->name??"Chi nhánh không tồn tại hoặc đã bị xoá"
                 ];
             });
-            return responseApi(paginateCustom($data, $debt), true);
+            return responseApi($data, true);
         } catch (\Throwable $throwable) {
             return responseApi($throwable->getMessage(), false);
         }
@@ -81,7 +94,8 @@ class DebtController extends Controller
                 "amount_debt" => $this->request->amount_debt,
                 "amount_paid" => $this->request->amount_paid,
                 "note" => $this->request->note,
-                "status" => 1
+                "status" => 1,
+                "location_id" => $this->request->location_id
             ]);
             return responseApi($debt, true);
         } catch (\Throwable $throwable) {
@@ -100,7 +114,7 @@ class DebtController extends Controller
     public function show()
     {
         try {
-            $debt = $this->model::with('partner')->where('id', $this->request->id)->get();
+            $debt = $this->model::with('partner','location')->where('id', $this->request->id)->get();
             $response = $debt->map(function ($item) {
                 return [
                     "id" => $item->id,
@@ -115,6 +129,8 @@ class DebtController extends Controller
                     "amount_paid" => $item->amount_paid,
                     "note" => $item->note,
                     "status" => $item->status,
+                    "location_id" => $item->location_id,
+                    "location_name" => $item->location->name??"Chi nhánh không tồn tại hoặc đã bị xoá",
                     "payments" => $item->payments
                 ];
             });
@@ -151,7 +167,8 @@ class DebtController extends Controller
                 "amount_debt" => $this->request->amount_debt,
                 "amount_paid" => $this->request->amount_paid,
                 "note" => $this->request->note,
-                "status" => $this->request->status
+                "status" => $this->request->status,
+                "location_id" => $this->request->location_id
             ]);
             return responseApi($debt, true);
         } catch (\Throwable $throwable) {

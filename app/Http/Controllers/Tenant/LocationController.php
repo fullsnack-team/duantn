@@ -45,10 +45,12 @@ class LocationController extends Controller
         return $request->validate($rules, $message);
     }
 
-    public function list()
+    public function list(Request $request)
     {
         try {
-            $locations = Location::with(['inventories'])->get();
+            $locations = Location::with(['inventories'])
+                ->orderBy('id', 'desc')
+                ->get();
             $return = $locations->map(function ($data) {
                 return [
                     'id' => $data->id,
@@ -102,8 +104,11 @@ class LocationController extends Controller
         DB::beginTransaction();
         try {
             $this->validation($request);
+            if (!$this->checkCountInventory()) {
+                return responseApi('Số lượng kho và chi nhánh đã đạt tối đa', false);
+            }
             $countMain = Location::where('is_main', 1)->count();
-            if ($countMain > 1) {
+            if ($countMain > 0 && $request->is_main == 1) {
                 return responseApi('Đã có cơ sở mặc định', false);
             }
             $file = $request->file('image');
@@ -121,13 +126,10 @@ class LocationController extends Controller
                 'district_code' => $request->district_code ?? null,
                 'ward_code' => $request->ward_code ?? null,
                 'address_detail' => $request->address_detail,
-                'status' => $request->status ?? 1,
+                'status' => $request->status ?? 0,
                 'is_main' => $request->is_main ?? 0,
                 'created_by' => $request->created_by ?? null
             ];
-            if (!$this->checkCountInventory()) {
-                return responseApi('Số lượng kho đã đạt tối đa', false);
-            }
             $this->createLocationAndInventory($data);
             DB::commit();
             return responseApi('Thêm thành công', true);
@@ -145,7 +147,7 @@ class LocationController extends Controller
             $location = Location::query()->find($request->id);
             if ($location->is_main == 0 && $request->is_main == 1) {
                 $countMain = Location::where('is_main', 1)->count();
-                if ($countMain > 1) {
+                if ($countMain > 0 && $request->is_main == 1) {
                     return responseApi('Đã có cơ sở mặc định', false);
                 }
             }
@@ -189,16 +191,16 @@ class LocationController extends Controller
     public function delete(Request $request)
     {
         try {
-            $location = Location::query()->findOrFail($request->id);
+            $location = Location::query()->find($request->id);
             if ($location) {
                 $variationQuantity = Tenant\VariationQuantity::query()->where('inventory_id', $location->id);
                 if ($variationQuantity->sum('quantity') > 0) {
                     return responseApi('Cơ sở này đang được sử dụng và còn hàng trong kho', false);
                 } else {
-                    $location?->delete();
-                    Storage::delete('public/' . $location->image);
-                    Inventory::query()->where('location_id', $request->id)->delete();
                     $variationQuantity->delete();
+                    Inventory::query()->where('location_id', $request->id)->delete();
+                    $location->delete();
+//                    Storage::delete('public/' . $location->image);
                     return responseApi('Xoá thành công', true);
                 }
             }
@@ -221,10 +223,10 @@ class LocationController extends Controller
     protected function checkCountInventory()
     {
         $pricingId = Tenant::current()->first()->pricing_id;
-        $max_inventory = Pricing::where('id', $pricingId)->first()->max_locations;
+        $max_inventory = Pricing::where('id', $pricingId)->first()?->max_locations;
         $countLocation = Location::query()->count();
         $countInventory = Inventory::query()->count();
-        if ($countInventory >= $max_inventory || $countLocation >= $max_inventory) {
+        if ($countInventory == $max_inventory && $countLocation == $max_inventory) {
             return false;
         }
         return true;

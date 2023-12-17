@@ -43,9 +43,10 @@ class ProductController extends Controller
                 'category',
                 'attributes.attributeValues',
                 'variations'
-            ])->orderBy('id', 'desc')->paginate(10);
+            ])
+                ->orderBy('id', 'desc')->get();
 
-            $data = $productData->getCollection()->transform(function ($productData) {
+            $data = $productData->map(function ($productData) {
                 return [
                     'id' => $productData->id,
                     'name' => $productData->name,
@@ -98,7 +99,7 @@ class ProductController extends Controller
                 ];
             });
 
-            return responseApi(paginateCustom($data, $productData), true);
+            return responseApi($data, true);
         } catch (\Throwable $throwable) {
             return responseApi($throwable->getMessage(), false);
         }
@@ -122,7 +123,7 @@ class ProductController extends Controller
                     'product.itemUnit',
                     'variationQuantities',
                     'batchs'
-                ])->get()->groupBy('product_id');
+                ])->orderBy('id', 'desc')->get()->groupBy('product_id');
             }
             return responseApi($products, true);
         } catch (\Throwable $throwable) {

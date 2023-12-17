@@ -36,7 +36,7 @@ class DebtRequest extends FormRequest
                 "required"
             ],
             "partner_type" => [
-                "required",
+                "nullable",
                 "in:0,1"
             ],
             "type" => [
@@ -59,6 +59,10 @@ class DebtRequest extends FormRequest
                 "in:0,1,2,3",
                 "nullable"
             ],
+            "location_id" => [
+                "required",
+                "exists:App\Models\Tenant\Location,id"
+            ],
         ];
 
         switch ($getUrl){
@@ -74,7 +78,8 @@ class DebtRequest extends FormRequest
                     "name" => $rules['name'],
                     "amount_debt" => $rules['amount_debt'],
                     "note" => $rules['note'],
-                    "status" => $rules['status']
+                    "status" => $rules['status'],
+                    "location_id" => $rules['location_id'],
                 ];
 
             case "show":
@@ -91,7 +96,6 @@ class DebtRequest extends FormRequest
             "id.required" => "Mã khoản nợ Không được để trống!",
             "id.exists" => "Mã khoản nợ không tồn tại!",
             "partner_id.required" => "Mã đối tác Không được để trống!",
-            "partner_type.required" => "Mã loại khách hàng Không được để trống!",
             "partner_type.in" => "Mã loại khách hàng không hợp lệ!",
             "type.required" => "Loại công nợ Không được để trống!",
             "type.in" => "Loại công nợ không hợp lệ!",
@@ -101,6 +105,8 @@ class DebtRequest extends FormRequest
             "amount_debt.gt" => "Số tiền nợ phải lớn hơn 0!",
             "note.max" => "Ghi chú vượt quá ký tự cho phép!",
             "status.in" => "Trạng thái không hợp lệ!",
+            "location_id.required" => "Mã cơ sở không được để trống!",
+            "location_id.exists" => "Mã cơ sở không tồn tại!",
         ];
     }
 }
